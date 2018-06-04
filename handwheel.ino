@@ -168,7 +168,8 @@ void initButtons() {
 }
 
 /*************************** 
- *  Initialize GPIO Ports
+ *  Initialize LEDs Ports
+ *  - display init animation
  **************************/
 void initLEDs() {  
   for (int i = 0; i<3; i++){
