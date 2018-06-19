@@ -1,6 +1,6 @@
 # Handwheel
 internal Arduino Controller for Estlcam handwheel
-to be used with estlCam v11 and higherhttps://www.estlcam.de/
+to be used with estlCam[1] v11 and higher.
 # Purpose
 estlcam is a great tool to controll your CNC router.
 One feature is a handwheel which controlls the basic funktionality without the need of Keyboard or mouse.
@@ -19,5 +19,5 @@ due to the lack of wires in the cable i needed a controller placed inside the ha
 # Wireing
 See source cod to see how everything must be wired together
    
-
+[1] https://www.estlcam.de
 
