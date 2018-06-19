@@ -5,6 +5,7 @@
                https://www.carluccio.de
   - history:   
     - 04.06.2018 initial release    
+    - 19.06.2018 Add default Values for Relais 1-4
   - Hardware: Arduino Nano v3 
   - Purpose:
     - control LEDs of Estlcam controlled Buttons (except X,Y,Z)
@@ -65,6 +66,12 @@
 #define RELAIS_2              5
 #define RELAIS_3              6
 #define RELAIS_4              7
+
+#define DEFAULT_RELAIS_1      false
+#define DEFAULT_RELAIS_2      false
+#define DEFAULT_RELAIS_3      false
+#define DEFAULT_RELAIS_4      false
+
 #define AUX_OUT              13 
 
 /***************************
@@ -168,8 +175,7 @@ void initButtons() {
 }
 
 /*************************** 
- *  Initialize LEDs Ports
- *  - display init animation
+ *  Initialize GPIO Ports
  **************************/
 void initLEDs() {  
   for (int i = 0; i<3; i++){
@@ -210,7 +216,7 @@ void initLEDs() {
     digitalWrite(LED_OK, 0);    
     SHORTDELAY;
   }
-  LONGDELAY;  
+  SHORTDELAY;  
   setAllLEDs(0);
   
   // Start with Mode_1: All on
@@ -272,7 +278,7 @@ void setRelais(byte num, boolean state){
      digitalWrite(RELAIS_2, state);
      digitalWrite(LED_AUX_2, state);
   } else if (num == 2) { 
-     digitalWrite(RELAIS_3, state);
+     digitalWrite(RELAIS_3, !state);
      digitalWrite(LED_AUX_3, state);
   } else if (num == 3) { 
      digitalWrite(RELAIS_4, state);
@@ -288,8 +294,11 @@ void setRelais(byte num, boolean state){
  *  - portstates
  **************************/
 void initRelais(){
-  for (int i = 0; i < NUM_RELAIS; i++)  {
-    gRelais[i] = false;    
+  gRelais[0] = DEFAULT_RELAIS_1;
+  gRelais[1] = DEFAULT_RELAIS_2;
+  gRelais[2] = DEFAULT_RELAIS_3;
+  gRelais[3] = DEFAULT_RELAIS_4;
+  for (int i = 0; i < NUM_RELAIS; i++) {
     setRelais(i, gRelais[i]);    
   }
 }
@@ -335,15 +344,11 @@ void loop() {
   // get button states and handle changes
   for (int i = 0; i < NUM_BUTTONS; i++)  {
     gButton[i].update();    
-    if (gButton[i].fell() ) {      
-      if ( i < (NUM_BUTTONS - 1)) {
-        // Buttons 1-3 toggle Relais 1-3 
+    if (gButton[i].fell() ) {            
+        // Buttons 1-4 toggle Relais 1-4
         gRelais[i] = !gRelais[i];
         setRelais(i, gRelais[i]);
-      } else {
-        // Buttons 4 toggles LED Mode of CNC Buttons
-        setNextCncLedMode();        
-      }
     }
   }
 }
+
