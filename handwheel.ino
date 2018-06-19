@@ -6,6 +6,7 @@
   - history:   
     - 04.06.2018 initial release    
     - 19.06.2018 Add default Values for Relais 1-4
+    - 19.06.2018 Add DEFAULT_LED_MODE
   - Hardware: Arduino Nano v3 
   - Purpose:
     - control LEDs of Estlcam controlled Buttons (except X,Y,Z)
@@ -45,8 +46,24 @@
 #include <Bounce2.h>          // from: https://github.com/thomasfredericks/Bounce2
 
 /***************************
+ * Defaults
+ **************************/
+ // default all LEDs on
+#define DEFAULT_LED_MODE  MODE_1   
+// relais defaults
+#define DEFAULT_RELAIS_1   true
+#define DEFAULT_RELAIS_2  false
+#define DEFAULT_RELAIS_3  false
+#define DEFAULT_RELAIS_4  false
+// number of buttons
+#define NUM_BUTTONS           4
+// number of relais
+#define NUM_RELAIS            4
+
+/***************************
  * GPIO Defines
  **************************/
+// LEDs
 #define LED_OK                8
 #define LED_PROGRAM_START     9
 #define LED_PROGRAM_STOP     10
@@ -56,22 +73,17 @@
 #define LED_AUX_2            15
 #define LED_AUX_3            16
 #define LED_AUX_4            17
-
+// buttons
 #define BUTTON_AUX_1         18
 #define BUTTON_AUX_2         19
 #define BUTTON_AUX_3          2
 #define BUTTON_AUX_4          3 
-
+// relais
 #define RELAIS_1              4
 #define RELAIS_2              5
 #define RELAIS_3              6
 #define RELAIS_4              7
-
-#define DEFAULT_RELAIS_1      false
-#define DEFAULT_RELAIS_2      false
-#define DEFAULT_RELAIS_3      false
-#define DEFAULT_RELAIS_4      false
-
+// additional output (not used)
 #define AUX_OUT              13 
 
 /***************************
@@ -87,16 +99,16 @@
 #define MODE_1               0b11111         // ALL
 #define MODE_2               0b00001         // only OK
 #define MODE_3               0b11110         // PGM Start/Stop + Spindle Start/Stop
+#define MODE_4               0b00000         // all OFF
+#define MODE_5               0b01010         // only PGM Stop + Spindle Stop
 
 #define SHORTDELAY           delay(50)       // Delay for starup Animation
 #define LONGDELAY            delay(2000)     // Delay for starup Animation
 
-#define NUM_RELAIS 4                         // number of relais
-#define NUM_BUTTONS 4                        // number of buttons
-
-// global vars
+/***************************
+ * global vars 
+ **************************/
 boolean gRelais[NUM_RELAIS];                 // state of relais
-byte    gCncLedMode;                         // actual CncLedMode
 Bounce  * gButton = new Bounce[NUM_BUTTONS]; // Buttons
 
 
@@ -141,24 +153,6 @@ void setCncLEDs(byte bf) {
   digitalWrite(LED_PROGRAM_STOP,  (1 & (bf>>2)));   
   digitalWrite(LED_SPINDLE_START, (1 & (bf>>3)));   
   digitalWrite(LED_SPINDLE_STOP,  (1 & (bf>>4)));   
-}
-
-/*********************************************************
- * Cycle next Mode 
- * for LEDs of Estlcam controlled Buttons 
- *********************************************************/
-void setNextCncLedMode() {
-  gCncLedMode ++;  
-  if (gCncLedMode == 1) { 
-     setCncLEDs (MODE_1);     
-  } else if (gCncLedMode == 2) { 
-     setCncLEDs (MODE_2);
-  } else if (gCncLedMode == 3) { 
-     setCncLEDs (MODE_3);
-  }  else {
-     gCncLedMode = 0;
-     setCncLEDs (0);     
-  }
 }
 
 /*************************** 
@@ -219,9 +213,8 @@ void initLEDs() {
   SHORTDELAY;  
   setAllLEDs(0);
   
-  // Start with Mode_1: All on
-  gCncLedMode = 0;
-  setNextCncLedMode();  
+  // Start with default LED Mode:
+  setCncLEDs(DEFAULT_LED_MODE);
 }
 
 /*************************** 
@@ -351,4 +344,3 @@ void loop() {
     }
   }
 }
-
