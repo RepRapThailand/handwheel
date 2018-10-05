@@ -17,7 +17,7 @@ due to the lack of wires in the cable i needed a controller placed inside the ha
      - PGM Start/Stop and Spindle Start/Stop        
      - All OFF
 # Wireing
-See source cod to see how everything must be wired together
+See source code to see how everything must be wired together
 # external Libraries user
 Get Bounce2 Library from: https://github.com/thomasfredericks/Bounce2
 
